@@ -1,5 +1,22 @@
-.venv/
+# Python
 __pycache__/
-.ipynb_checkpoints/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Environment variables
 .env
+
+# Data
+data/
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# IDEs
 .vscode/
+.idea/
+
+# Notebook checkpoints
+.ipynb_checkpoints
