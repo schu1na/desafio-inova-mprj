@@ -1,5 +1,4 @@
 SELECT 
-    c.id_contrato,
     c.objeto,
     c."data",
     c.valor 
