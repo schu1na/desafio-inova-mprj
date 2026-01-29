@@ -5,12 +5,12 @@ Este projeto tem como objetivo estruturar, analisar e visualizar informações d
 
 ## Estrutura do Projeto
 
-Abaixo está a descrição das principais pastas e arquivos contidos neste repositório:
+Abaixo está a descrição das principais pastas e arquivos contidos neste repositório, seguida pela estrutura de pastas:
 
 - `dashboards/`: Contém os arquivos estáticos do dashboard e o link para o dashboard interativo.
 - `docs/`: Documentação do projeto.
     - `modelo-dados/`: Contém o diagrama e explicação da modelagem de dados.
-- `notebooks/`: Notebooks Jupyter utilizados para análise exploratória de dados (EDA) e prototipagem.
+- `notebooks/`: Notebooks Jupyter contendo a Investigação de Anomalias (Questão 2), EDA e documentação das hipóteses de negócio.
 - `relatorio/`: Contém o relatório final da análise em formato PDF e seus arquivos fonte (LaTeX).
 - `sql/`: Scripts SQL para registro das consultas e investigações realizadas.
     - `exploracao/`: Contém as consultas de exploração das tabelas para melhor entendimento do volume e qualidade dos dados.
@@ -19,6 +19,30 @@ Abaixo está a descrição das principais pastas e arquivos contidos neste repos
 - `src/`: Código fonte Python modularizado.
     - `database.py`: Módulo responsável pela conexão com o banco de dados.
 - `requirements.txt`: Lista das dependências Python do projeto.
+
+
+```text
+.
+├── dashboards/
+├── docs/
+│   └── modelo-dados/
+├── notebooks/
+│   └── eda_despesa_publica.ipynb
+├── relatorio/
+│   ├── img/
+│   ├── relatorio.pdf
+│   └── relatorio.tex
+├── sql/
+│   ├── exploracao/
+│   ├── investigacoes/
+│   └── queries_base/
+├── src/
+│   ├── database.py
+│   └── test_connection.py
+├── .env.example
+├── README.md
+└── requirements.txt
+```
 
 ## Configuração
 
@@ -30,6 +54,9 @@ Abaixo está a descrição das principais pastas e arquivos contidos neste repos
 
     # Ativar o ambiente (Windows)
     .\.venv\Scripts\activate
+
+    # Linux/Mac:
+    source .venv/bin/activate
 
     ```
 
@@ -46,12 +73,37 @@ Abaixo está a descrição das principais pastas e arquivos contidos neste repos
       ```
     - Edite o arquivo `.env` inserindo as credenciais de acesso ao banco de dados.
 
+
+## Como Usar (Exemplo Python)
+
+Este projeto foi desenhado para ser modular. Abaixo estão as instruções para executar as análises interativas ou testar a conexão com o banco de dados via código.
+
+### 1. Executando as Análises (Jupyter Notebooks)
+Para reproduzir a investigação de anomalias e a análise exploratória:
+
+1. Ative o ambiente virtual (caso não esteja ativo veja a seção de Configuração).
+2. Abra o arquivo `notebooks/eda_despesa_publica.ipynb` no Jupyter Notebook.
+
+### 2. Consumindo Dados via Python (Script)
+Para conectar ao banco de dados e executar consultas utilizando o código fonte:
+
+```python
+from src.database import run_query
+
+# Exemplo: Listar os 5 primeiros contratos
+query = "SELECT * FROM contrato LIMIT 5"
+df = run_query(query)
+
+print(df.head())
+```
+
+
 ## Acessar Informações
 
 - **Modelo de Dados (Questão 1)**:
-  A visualização e explicação da modelagem de dados utilizada no projeto está disponível em:
+  A visualização e explicação da modelagem de dados utilizada no projeto estão disponível em:
   [Visualizar Modelo de Dados](./docs/modelo-dados/diagrama-bd-desafio-inova-mprj.png)
-  *(Veja também a explicação detalhada em [Explicação do Modelo de Dados](./docs/modelo-dados/explicacao_modelo_dados.md))*
+  *(Veja também a explicação detalhada em [Explicação do Modelo de Dados](./docs/modelo-dados/README.md))*
 
 - **Investigação de Anomalias (Questão 2)**:
   A documentação dos questionamentos de negócio (ex: pagamentos sem empenhos, contratos excedidos) e a análise exploratória detalhada encontram-se estruturadas no Jupyter Notebook:
@@ -66,15 +118,3 @@ Abaixo está a descrição das principais pastas e arquivos contidos neste repos
 - **Relatório de Análise**:
   O relatório técnico completo com os resultados da análise pode ser acessado no link abaixo:
   [Ler Relatório Final (PDF)](./relatorio/relatorio.pdf)
-
-## Como Usar (Exemplo Python)
-
-Para conectar ao banco de dados e executar consultas utilizando o código fonte:
-
-```python
-from src.database import run_query
-
-# Exemplo de consulta
-df = run_query("SELECT * FROM contrato LIMIT 10")
-print(df)
-```
