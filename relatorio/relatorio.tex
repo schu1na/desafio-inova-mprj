@@ -1,0 +1,166 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{graphicx} % Para imagens
+\usepackage{geometry}
+\geometry{a4paper, left=3cm, top=3cm, right=2cm, bottom=2cm}
+\usepackage{hyperref}
+\usepackage{float}
+\hypersetup{
+    colorlinks=true,       % True: links coloridos; False: caixas coloridas
+    linkcolor=black,        % Cor dos links internos (como no Sumário)
+    filecolor=magenta,      
+    urlcolor=blue,          % Cor de links externos (URLs)
+    citecolor=black,
+    pdftitle={Relatório de Análise de Despesas Públicas},
+}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+
+
+\begin{document}
+
+% Capa do relatório
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+        
+        \Huge
+        \textbf{Análise de Despesas Públicas}
+        
+        \vspace{0.5cm}
+        \LARGE
+        Diagnóstico de Inconsistências e Fluxos Orçamentários
+        
+        \vspace{1.5cm}
+        
+        \textbf{Relatório Técnico}
+        
+        \vfill
+        
+        \line(1,0){400} \\
+        \large
+        \textbf{Candidato:} Gabriel Santos Schuina \\
+        \small \href{https://github.com/schu1na/desafio-inova-mprj}{\texttt{github.com/schu1na/desafio-inova-mprj}} \\
+        \textit{Processo Seletivo - Inova MPRJ} \\
+        \today
+        
+    \end{center}
+\end{titlepage}
+
+% Sumário
+\tableofcontents
+\newpage
+
+\begin{abstract}
+\noindent
+Este relatório técnico apresenta os resultados da auditoria de dados orçamentários, 
+fundamentada no fluxo legal da despesa pública. A partir da análise de 500 empenhos, 
+buscou-se identificar inconformidades lógicas e indícios de irregularidades na execução 
+financeira. Foram detectadas três inconsistências críticas: pagamentos superiores ao valor 
+empenhado, inversão cronológica de etapas (pagamento anterior ao empenho) e pagamentos 
+realizados sem a devida liquidação. Os achados apontam para falhas nos controles internos 
+da gestão orçamentária.
+\end{abstract}
+
+
+\section{Introdução}
+A execução da despesa pública no Brasil obedece a um procedimento rígido estipulado pela 
+Lei 4.320/64, estruturado em três estágios fundamentais e sequenciais: o Empenho (reserva 
+de dotação), a Liquidação (reconhecimento do direito do credor) e o Pagamento (desembolso 
+financeiro). A estrita observância dessa ordem cronológica e lógica é vital para a 
+transparência e a conformidade fiscal.
+
+O presente relatório tem como objetivo auditar a integridade de uma base de dados contendo 
+500 registros de despesas, verificando a consistência entre essas etapas. Através de técnicas 
+de análise de dados, buscou-se identificar violações das regras de 
+negócio que possam comprometer a confiabilidade da execução orçamentária.
+
+A seguir, detalha-se a metodologia utilizada e as inconsistências diagnosticadas durante o 
+processo de validação.
+
+\section{Diagnóstico de Inconsistências}
+
+\subsection{Violação de Teto: Pagamentos Superiores ao Empenho}
+
+O empenho de despesa, conforme estipulado pela legislação financeira, atua como um teto limitador 
+para a execução orçamentária, criando a obrigação de pagamento apenas até o montante reservado. 
+
+No entanto, a análise dos dados revelou a existência de \textbf{225} registros onde essa lógica foi violada, 
+com valores pagos excedendo o saldo empenhado. O valor total pago a mais chega a \textbf{R\$3.500.000,00}. 
+Essa inconsistência representa um risco crítico de controle, pois indica saídas de caixa (pagamentos) 
+sem o devido planejamento orçamentário. A ausência de uma trava sistêmica para impedir tal operação sugere 
+vulnerabilidade no sistema de gestão financeira analisado.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/pagamentos_maior_empenho.jpg}
+    \caption{Distribuição dos fornecedores e dos objetos de serviço com pagamentos maiores que o valor do empenho.}
+\end{figure}
+
+
+\subsection{Quebra de Fluxo: Pagamentos sem Liquidação Prévia}
+A liquidação é o estágio da despesa onde se verifica o direito adquirido do credor, tendo por base títulos e 
+documentos comprobatórios do respectivo crédito (Art. 63 da Lei 4.320/64). Em termos práticos, é a etapa de 
+conferência da entrega do bem ou serviço.
+
+A análise dos dados apontou a ocorrência de \textbf{40} pagamentos realizados sem o registro de liquidação 
+correspondente, os quais somam \textbf{R\$985.500,00}. Esta quebra de fluxo é crítica, pois sugere que houve desembolso 
+financeiro sem a validação formal de que a contrapartida foi entregue à administração pública. A inexistência 
+desta etapa compromete a rastreabilidade da despesa e expõe o erário ao risco de pagamentos indevidos por serviços 
+não prestados.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/quebra_fluxo.jpg}
+    \caption{Distribuição dos objetos de serviço com pagamentos sem liquidação.}
+\end{figure}
+
+
+\subsection{Inversão Cronológica: Pagamentos Anteriores ao Empenho}
+
+O artigo 60 da Lei 4.320/64 é taxativo ao determinar que "é vedada a realização de despesa sem prévio empenho". 
+O empenho é o ato que cria a obrigação para o Estado; portanto, cronologicamente, ele deve preceder qualquer 
+desembolso.
+
+A análise detectou um agrupamento anômalo de \textbf{41 registros} onde a data de pagamento é anterior à data de 
+emissão do empenho. Ao aprofundar a investigação sobre esses casos, identificou-se um padrão temporal exato: em 
+todas as 41 ocorrências, o pagamento foi registrado precisamente \textbf{5 dias antes} do respectivo empenho.
+
+A regularidade desse intervalo (delta $t = -5$ dias) sugere fortemente a existência de um erro sistêmico ou de um 
+procedimento automatizado de lançamento de dados que está operando com datas defasadas, e não meros erros manuais 
+aleatórios de digitação.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/pagamentos_antes_empenho.jpg}
+    \caption{Distribuição dos objetos de serviço com pagamentos anteriores ao empenho.}
+\end{figure}
+
+\section{Conclusão e Recomendações}
+
+A auditoria realizada na base de dados de execução orçamentária revelou inconsistências graves que comprometem a 
+conformidade fiscal e a transparência dos gastos públicos. O somatório das irregularidades detectadas — incluindo 
+pagamentos excedentes (R\$ 3,5 mi) e desembolsos sem liquidação (R\$ 985 mil) — aponta para uma fragilidade nos 
+controles preventivos do sistema atual.
+
+Mais do que erros operacionais isolados, a padronização das falhas (como o intervalo fixo de 5 dias na inversão 
+cronológica) sugere a existência de *bugs* em rotinas automatizadas ou falhas na parametrização do software de 
+gestão financeira (Siafe/ERP).
+
+Diante deste cenário, recomendam-se as seguintes ações corretivas imediatas:
+
+\begin{itemize}
+    \item \textbf{Implementação de Travas Lógicas (Hard Blocks):} Configurar o banco de dados para rejeitar 
+    automaticamente qualquer transação de pagamento cujo valor supere o saldo de empenho disponível 
+    ($V_{pgto} > V_{empenho}$) ou cuja data seja anterior à do empenho.
+    \item \textbf{Revisão de Scripts de Automação:} Auditar os *jobs* de processamento de dados para corrigir 
+    o *delay* negativo de 5 dias identificado nos 41 registros anômalos.
+    \item \textbf{Saneamento da Base:} Realizar um pente-fino nos 40 casos de pagamento sem liquidação para 
+    verificar se houve a efetiva prestação do serviço, mitigando risco de dano ao erário.
+\end{itemize}
+
+Esta análise demonstra que, embora os dados estejam disponíveis, a integridade da informação requer monitoramento contínuo e regras de validação mais estritas na entrada dos dados.
+\end{document}
